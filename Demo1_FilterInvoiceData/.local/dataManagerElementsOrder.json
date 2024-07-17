@@ -11,8 +11,39 @@
     {
       "Path": "Main.xaml",
       "SortBy": 0,
-      "VariablesSectionElementsOrder": [],
+      "VariablesSectionElementsOrder": [
+        "dt_InvoiceData&Sequence_1"
+      ],
       "ArgumentsSectionElementsOrder": [],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "LoginAndExtractData.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [
+        "Username&Sequence_1",
+        "Password&Sequence_1",
+        "ExtractDataTable&Sequence_1"
+      ],
+      "ArgumentsSectionElementsOrder": [
+        "out_InvoiceData"
+      ],
+      "ConstantsSectionElementsOrder": [],
+      "AddedNamespaces": null
+    },
+    {
+      "Path": "FilterInvoiceData.xaml",
+      "SortBy": 0,
+      "VariablesSectionElementsOrder": [
+        "str_GivenDate&Sequence_1",
+        "bool_AnyLargeTotals&Sequence_1",
+        "str_FilteredInv&Sequence_1",
+        "dt_FilteredInvoices&Sequence_1"
+      ],
+      "ArgumentsSectionElementsOrder": [
+        "in_dt_Invoices"
+      ],
       "ConstantsSectionElementsOrder": [],
       "AddedNamespaces": null
     }
