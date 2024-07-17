@@ -5,7 +5,7 @@
   <VisualBasic.Settings>
     <x:Null />
   </VisualBasic.Settings>
-  <sap:VirtualizedContainerService.HintSize>1497,944</sap:VirtualizedContainerService.HintSize>
+  <sap:VirtualizedContainerService.HintSize>1497,1299</sap:VirtualizedContainerService.HintSize>
   <sap2010:WorkflowViewState.IdRef>Filter_Data_1</sap2010:WorkflowViewState.IdRef>
   <TextExpression.NamespacesForImplementation>
     <sco:Collection x:TypeArguments="x:String">
@@ -42,6 +42,7 @@
       <x:String>UiPath.CSV</x:String>
       <x:String>UiPath.CSV.Activities</x:String>
       <x:String>System.Globalization</x:String>
+      <x:String>System.Numerics</x:String>
     </sco:Collection>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -97,9 +98,14 @@
       <AssemblyReference>System.Linq.Async</AssemblyReference>
       <AssemblyReference>System.Collections</AssemblyReference>
       <AssemblyReference>System.Collections.NonGeneric</AssemblyReference>
+      <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.Linq.Async.Queryable</AssemblyReference>
+      <AssemblyReference>System.Linq.Parallel</AssemblyReference>
+      <AssemblyReference>System.Collections.Immutable</AssemblyReference>
+      <AssemblyReference>System.Linq.Queryable</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence sap2010:Annotation.AnnotationText="This workflows primary objective is to filter the Invoice data extracted from the ACME website" DisplayName="Filter Invoice Data" sap:VirtualizedContainerService.HintSize="496,879" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <Sequence sap2010:Annotation.AnnotationText="This workflows primary objective is to filter the Invoice data extracted from the ACME website" DisplayName="Filter Invoice Data" sap:VirtualizedContainerService.HintSize="496,1234" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <Sequence.Variables>
       <Variable x:TypeArguments="sd:DataTable" Name="dt_FilteredInvoices" />
       <Variable x:TypeArguments="x:String" Name="str_FilteredInv" />
@@ -117,8 +123,15 @@
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
     <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="434,173" sap2010:WorkflowViewState.IdRef="LogMessage_1" Message="[&quot;&lt;&lt; Start Filter Invoice Data &gt;&gt;&quot;]" />
-    <ui:ReadCsvFile PathResource="{x:Null}" DataTable="[in_dt_Invoices]" Delimitator="Comma" DelimitatorForViewModel="Comma" DisplayName="Read Extracted Invoice data" FilePath="ExportData.csv" sap:VirtualizedContainerService.HintSize="434,186" sap2010:WorkflowViewState.IdRef="ReadCsvFile_1" />
-    <Assign DisplayName="Assign - dt_FilteredInvoices" sap:VirtualizedContainerService.HintSize="434,114" sap2010:WorkflowViewState.IdRef="Assign_1">
+    <ui:ReadCsvFile PathResource="{x:Null}" DataTable="[in_dt_Invoices]" Delimitator="Comma" DelimitatorForViewModel="Comma" DisplayName="Read Extracted Invoice data" FilePath="ExportData.csv" sap:VirtualizedContainerService.HintSize="434,57" sap2010:WorkflowViewState.IdRef="ReadCsvFile_1">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+    </ui:ReadCsvFile>
+    <Assign DisplayName="LINQ to filter out Overdue Invoices" sap:VirtualizedContainerService.HintSize="434,114" sap2010:WorkflowViewState.IdRef="Assign_1">
       <Assign.To>
         <OutArgument x:TypeArguments="sd:DataTable">[dt_FilteredInvoices]</OutArgument>
       </Assign.To>
@@ -126,7 +139,57 @@
         <InArgument x:TypeArguments="sd:DataTable">[in_dt_Invoices.AsEnumerable.Where(Function (row) row("Total").ToString.Contains("USD") AndAlso Not row("Date").ToString.Contains("0000") AndAlso DateTime.ParseExact(row("Date").ToString, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) &lt; DateTime.ParseExact(str_GivenDate, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ).CopyToDataTable]</InArgument>
       </Assign.Value>
     </Assign>
-    <ui:OutputDataTable DataTable="[dt_FilteredInvoices]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="434,112" sap2010:WorkflowViewState.IdRef="OutputDataTable_1" Text="[str_FilteredInv]" />
-    <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="434,164" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Error" Message="[str_FilteredInv]" />
+    <ui:InvokeCode ContinueOnError="{x:Null}" sap2010:Annotation.AnnotationText="This will arrange all the invoices in descending order, to achieve this we'll eliminate the currency from the invoice total value" Code="dt_FilteredInvoices.AsEnumerable().ToList().ForEach(Sub (row) row(&quot;Total&quot;) = row(&quot;Total&quot;).ToString.Split(&quot; &quot;c).First)           " DisplayName="LINQ to Remove Currency from Total" sap:VirtualizedContainerService.HintSize="434,254" sap2010:WorkflowViewState.IdRef="InvokeCode_1">
+      <ui:InvokeCode.Arguments>
+        <InArgument x:TypeArguments="sd:DataTable" x:Key="dt_FilteredInvoices">
+          <VisualBasicValue x:TypeArguments="sd:DataTable" ExpressionText="dt_FilteredInvoices" />
+        </InArgument>
+      </ui:InvokeCode.Arguments>
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+    </ui:InvokeCode>
+    <Assign DisplayName="LINQ to Order dt_FilteredInvoices in Descending Order" sap:VirtualizedContainerService.HintSize="434,114" sap2010:WorkflowViewState.IdRef="Assign_2">
+      <Assign.To>
+        <OutArgument x:TypeArguments="sd:DataTable">[dt_FilteredInvoices]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="sd:DataTable">[dt_FilteredInvoices.AsEnumerable.OrderByDescending(Function (row) CInt(row("Total"))).CopyToDataTable]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ui:OutputDataTable DataTable="[dt_FilteredInvoices]" DisplayName="Output Data Table as Text" sap:VirtualizedContainerService.HintSize="434,57" sap2010:WorkflowViewState.IdRef="OutputDataTable_2" Text="[str_FilteredInv]">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+    </ui:OutputDataTable>
+    <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="434,57" sap2010:WorkflowViewState.IdRef="LogMessage_3" Level="Error" Message="[str_FilteredInv]">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+    </ui:LogMessage>
+    <Assign DisplayName="LINQ to check if the Total &gt; 100000" sap:VirtualizedContainerService.HintSize="434,114" sap2010:WorkflowViewState.IdRef="Assign_3">
+      <Assign.To>
+        <OutArgument x:TypeArguments="x:Boolean">[bool_AnyLargeTotals]</OutArgument>
+      </Assign.To>
+      <Assign.Value>
+        <InArgument x:TypeArguments="x:Boolean">[dt_FilteredInvoices.AsEnumerable.Any(Function (row) CInt(row("Total")) &gt; 100000)]</InArgument>
+      </Assign.Value>
+    </Assign>
+    <ui:LogMessage DisplayName="Log Message" sap:VirtualizedContainerService.HintSize="434,164" sap2010:WorkflowViewState.IdRef="LogMessage_4" Level="Error" Message="[&quot;Are there any invoices with the total exceeding 100,000 &gt; &quot; + bool_AnyLargeTotals.ToString]">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+    </ui:LogMessage>
   </Sequence>
 </Activity>
