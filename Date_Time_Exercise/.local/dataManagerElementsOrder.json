@@ -12,11 +12,14 @@
       "Path": "Main.xaml",
       "SortBy": 0,
       "VariablesSectionElementsOrder": [
-        "dictionary_SalesDictionary&Sequence_1",
-        "int_EMEAMaxSales&Sequence_1",
-        "bool_AnyTargetSalesReached&Sequence_1",
-        "str_SalesData&Sequence_1",
-        "dt_SalesData&Sequence_1"
+        "UptimeDifference&Sequence_1",
+        "ServerTwoUptime&Sequence_1",
+        "ServerOneUptime&Sequence_1",
+        "Server2ToDateTime&Sequence_1",
+        "Server1ToDateTime&Sequence_1",
+        "CurrentDateTime&Sequence_1",
+        "ServerTwoStartDate&Sequence_1",
+        "ServerOneStartDate&Sequence_1"
       ],
       "ArgumentsSectionElementsOrder": [],
       "ConstantsSectionElementsOrder": [],
